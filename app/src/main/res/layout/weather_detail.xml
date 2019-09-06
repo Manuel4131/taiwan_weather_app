@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/weather_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/sun_icon" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/imageGuideLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="288dp" />
+
+    <TextView
+        android:id="@+id/ci_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/weather_icon"
+        android:layout_marginEnd="3dp"
+        android:text="舒適度"
+        app:layout_constraintStart_toStartOf="@+id/imageGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/weather_icon" />
+
+    <TextView
+        android:id="@+id/ci_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/weather_icon"
+        android:layout_marginStart="48dp"
+        android:text="冷"
+        app:layout_constraintStart_toEndOf="@+id/ci_tv"
+        app:layout_constraintTop_toTopOf="@id/weather_icon" />
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/imageGuideLine2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <TextView
+        android:id="@+id/humidity_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="相對濕度"
+        app:layout_constraintStart_toStartOf="@id/ci_tv"
+        app:layout_constraintTop_toBottomOf="@+id/ci_tv" />
+
+    <TextView
+        android:id="@+id/humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="80%"
+        app:layout_constraintStart_toStartOf="@+id/ci_val"
+        app:layout_constraintTop_toBottomOf="@+id/ci_val" />
+
+    <TextView
+        android:id="@+id/uvi_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="紫外線指數"
+        app:layout_constraintTop_toBottomOf="@+id/humidity_tv"
+        app:layout_constraintStart_toStartOf="@+id/humidity_tv" />
+
+    <TextView
+        android:id="@+id/uvi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/ci_val"
+        app:layout_constraintTop_toBottomOf="@id/humidity" />
+
+    <TextView
+        android:id="@+id/pop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="降雨機率"
+        app:layout_constraintStart_toStartOf="@+id/uvi_tv"
+        app:layout_constraintTop_toBottomOf="@+id/uvi_tv" />
+
+    <TextView
+        android:id="@+id/pop_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Unkown - 10%"
+        app:layout_constraintStart_toStartOf="@+id/ci_val"
+        app:layout_constraintTop_toBottomOf="@+id/uvi"
+        android:layout_marginTop="8dp"/>
+
+
+</android.support.constraint.ConstraintLayout>
