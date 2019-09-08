@@ -9,6 +9,7 @@ import com.test.weatherapp.data.thirtySixHoursPrediction.instantWeatherStatus;
 import com.test.weatherapp.utils.BuildDataMap;
 import com.test.weatherapp.utils.accessProperty;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -78,6 +79,7 @@ public class RetrofitQuery {
         DateTimeFormatter dateObj = DateTimeFormat.forPattern("yyyy-MM-dd");
         DateTimeFormatter timeObj = DateTimeFormat.forPattern("hh-mm-ss");
 
+
         // generate query time string
         String dayStr = dateObj.print(ldt);
         String timeStr = timeObj.print(ldt);
@@ -88,6 +90,9 @@ public class RetrofitQuery {
         Log.d("endTime", endTime);
         String api_key = accessProperty.get(ctx,"CWB_API_TOKEN");
 
+        // after 7 days
+        String after7days = dateObj.print(ldt.plusDays(7) )+ "T" + "23:59:59";
+        endTime = after7days;
         // test use, the default location is set to be 宜蘭縣
         Call<instantWeatherStatus> call = client.getInstantMsg(
                 api_key,

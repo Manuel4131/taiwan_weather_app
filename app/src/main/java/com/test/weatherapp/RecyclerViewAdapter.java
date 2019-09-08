@@ -53,7 +53,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        Log.d("getItemCount", String.valueOf(weatherPredicts.size()));
         return weatherPredicts.size();
     }
 
