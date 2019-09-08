@@ -70,7 +70,6 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter{
 
     @Override
     public int getCount(){
-//        return locations.size();
         return locationFrag.size();
     }
 }//class

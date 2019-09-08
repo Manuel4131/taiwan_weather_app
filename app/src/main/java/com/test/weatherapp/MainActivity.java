@@ -33,24 +33,21 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "main";
     private ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
     private ArrayList<String> locations = new ArrayList<>();
-
-    @Override
-    protected void onStop() {
-        Log.d(TAG, "onStop");
-        super.onStop();
-    }
-
+    private Integer duplicatedPos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState==null){
-            Log.d(TAG, "savedInstanceState is null");
-        }
         Log.d(TAG, "onCreate");
+
         super.onCreate(savedInstanceState);
+
+        duplicatedPos = -1; //initial state: no duplicated county.
         setContentView(R.layout.activity_main2);
         mPager = findViewById(R.id.viewpager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+
+        duplicatedPos = getIntent().
+                        getIntExtra("duplicatedPos", -1);
 
         ArrayList<String> arrayList= getIntent().getStringArrayListExtra("locations");
         if(arrayList!=null){
@@ -68,26 +65,21 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //        locations.add(location);
 
-        // test to create multiple frags in viewpager(works)
-//        locations.add("台北市");
-//        locations.add("高雄市");
-//        locations.add("新竹市");
-//        locations.add("彰化縣");
-        ArrayList<String> locs = new ArrayList<>();
 
         for(String loc:locations){
             Log.d("mainActivity",loc);
             Bundle fragBundle = new Bundle();
             fragBundle.putStringArrayList("locations", locations);
             fragBundle.putString("currentLocation",loc);
-
-//            bundle.putStringArrayList("location",locs);
             Fragment frag = new NewLocationFrag();
             frag.setArguments(fragBundle);
             ((ScreenSlidePagerAdapter) pagerAdapter).addFrag(frag);
-//            Log.d("Main",String.valueOf(pagerAdapter.getCount()));
         }
         mPager.setAdapter(pagerAdapter);
+        if(duplicatedPos == -1)
+            mPager.setCurrentItem(pagerAdapter.getCount() -1);
+        else
+            mPager.setCurrentItem(duplicatedPos);
 //        Bundle bundle = new Bundle();
 //        bundle.putString("location", location);
 //        Fragment frag = new NewLocationFrag();

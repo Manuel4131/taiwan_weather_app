@@ -17,10 +17,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,62 +49,76 @@ public class NewLocationFrag extends Fragment {
     private ArrayAdapter adapter;
     private Context mCtx;
     private String mLoc;
-    public NewLocationFrag(){
+    private ArrayList<String> locationArray;
 
-    }
+    String[] twCounties = new String[]{
+            "基隆市", "臺北市", "新北市", "宜蘭縣", "桃園市", "新竹縣", "新竹市",
+            "苗栗縣", "臺中市", "彰化縣", "雲林縣", "南投縣", "嘉義縣", "嘉義市",
+            "臺南市", "高雄市", "屏東縣", "臺東縣", "花蓮縣", "澎湖縣", "金門縣",
+            "連江縣"
+    };
+
+    // Empty constructor is required in Fragment according to document
+    public NewLocationFrag(){}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCtx = getActivity();
+        // retrieve the location array from main act
+        Bundle bundle = this.getArguments();
+        if(bundle!=null){
+            locationArray = bundle.getStringArrayList("locations");
+            mLoc = bundle.getString("currentLocation");
+            Log.d("Fragment location", mLoc);
+        }
+        else {
+            locationArray= null;
+            Log.e(TAG, "bundel to fragment is null");
+            //error
+        }
+        // default location
+        if(mLoc ==null) mLoc ="宜蘭縣";
     }
-    private Integer testId = 0;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.scroll_view_base, container, false);
-        rootView.setId(testId );
-        testId++;
-        String location=null;
-        Bundle bundle = this.getArguments();
-        final ArrayList<String> locationArray;
-        if(bundle!=null){
-//            location = bundle.getString("location");
-//            location = bundle.getString("location");
-            ArrayList<String> locs= new ArrayList<>();
-            locationArray = bundle.getStringArrayList("locations");
-            location = bundle.getString("currentLocation");
-//            location = locationArray.get(locationArray.size()-1);
-            Log.d("Fragment location", location);
-        }
-        else {
-            locationArray= null;
-            //error
-        }
+
+        // add search bar to fragment view
+        ListView locations_lv = rootView.findViewById(R.id.locations_lv);
+        EditText searchLocation = rootView.findViewById(R.id.search_location);
+        adapter = new ArrayAdapter(getActivity(), R.layout.list_item_layout, twCounties);
+        locations_lv.setAdapter(adapter);
+        // Extract
+        bindSearchBarEvent(searchLocation,locations_lv);
+
+
 
         // Right top plus corner binding event
         ImageButton imageButton = rootView.findViewById(R.id.select_location);
         imageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Bundle selectLocationBundle = new Bundle();
-                selectLocationBundle.putStringArrayList("locations",locationArray);
-                Intent activityIntent = new Intent(getActivity(),
-                        SelectLocation.class);
-                activityIntent.putStringArrayListExtra("locations",locationArray);
-
-                startActivity(activityIntent);
-//                getActivity().finish();
+                rootView.findViewById(R.id.scrollview).setVisibility(View.GONE);
+                rootView.findViewById(R.id.search_view_layout).setVisibility(View.VISIBLE);
+//                Bundle selectLocationBundle = new Bundle();
+//                selectLocationBundle.putStringArrayList("locations",locationArray);
+//                Intent activityIntent = new Intent(getActivity(),
+//                        SelectLocation.class);
+//                activityIntent.putStringArrayListExtra("locations",locationArray);
+//                startActivity(activityIntent);
             }
         });
 
-        if(location==null) location="宜蘭縣";
+
         TextView location_title = rootView.findViewById(R.id.location_title);
-        location_title.setText(location);
+        location_title.setText(mLoc);
 
         RetrofitQuery query = new RetrofitQuery(getActivity());
-        Call<predictWeatherData> call2= query.GetWeatherData(location);
+        Call<predictWeatherData> call2= query.GetWeatherData(mLoc);
 //        Call<predictWeatherData> call2= query.GetWeatherData(mLoc);
         call2.enqueue(new Callback<predictWeatherData>(){
             @Override
@@ -220,4 +236,49 @@ public class NewLocationFrag extends Fragment {
 //        rainfallChart.invalidate();
 //    }//onCreate method
 
+    private void bindSearchBarEvent(EditText searchLocation,ListView lv){
+        searchLocation.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                adapter.getFilter().filter(charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // when certain item is clicked, the location will be added to
+                // a ListArray returned to the main activity. And the fragment will
+                // finish after starting main act.
+                Log.d("onItemClick", "onItemClick");
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                String selectLocation = parent.getItemAtPosition(position).toString();
+                // if selected county already exists, just return pos, or add it in.
+                if(!locationArray.contains(selectLocation)) {
+                    locationArray.add(selectLocation);
+                }
+                else{
+                    Integer duplicatedPos = locationArray.indexOf(selectLocation);
+                    intent.putExtra("duplicatedPos", duplicatedPos);
+                }
+
+                intent.putStringArrayListExtra("locations", locationArray);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
+    }
+
 }
+
+
