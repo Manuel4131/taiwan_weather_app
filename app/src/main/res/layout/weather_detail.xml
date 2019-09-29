@@ -6,9 +6,9 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/weather_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/weather_detail_icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="28dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,6 +29,8 @@
         android:layout_alignTop="@id/weather_icon"
         android:layout_marginEnd="3dp"
         android:text="舒適度"
+        android:textSize="22sp"
+        android:textColor="@color/light_blue"
         app:layout_constraintStart_toStartOf="@+id/imageGuideLine2"
         app:layout_constraintTop_toTopOf="@id/weather_icon" />
 
@@ -38,7 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/weather_icon"
         android:layout_marginStart="48dp"
-        android:text="冷"
+        android:textSize="22sp"
+        android:textColor="@color/light_blue"
         app:layout_constraintStart_toEndOf="@+id/ci_tv"
         app:layout_constraintTop_toTopOf="@id/weather_icon" />
 
@@ -56,6 +59,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="相對濕度"
+        android:textSize="22sp"
+        android:textColor="@color/light_blue"
         app:layout_constraintStart_toStartOf="@id/ci_tv"
         app:layout_constraintTop_toBottomOf="@+id/ci_tv" />
 
@@ -64,7 +69,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="80%"
+        android:text="..."
+        android:textSize="22sp"
+        android:textColor="@color/light_blue"
         app:layout_constraintStart_toStartOf="@+id/ci_val"
         app:layout_constraintTop_toBottomOf="@+id/ci_val" />
 
@@ -74,6 +81,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="紫外線指數"
+        android:textSize="22sp"
+        android:textColor="@color/light_blue"
         app:layout_constraintTop_toBottomOf="@+id/humidity_tv"
         app:layout_constraintStart_toStartOf="@+id/humidity_tv" />
 
@@ -82,7 +91,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/ci_val"
+        android:layout_marginStart="14dp"
+        android:textSize="22sp"
+        android:textColor="@color/light_blue"
+        android:text="YYY"
+        app:layout_constraintStart_toEndOf="@+id/uvi_tv"
         app:layout_constraintTop_toBottomOf="@id/humidity" />
 
     <TextView
@@ -91,6 +104,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="降雨機率"
+        android:textSize="22sp"
+        android:textColor="@color/light_blue"
         app:layout_constraintStart_toStartOf="@+id/uvi_tv"
         app:layout_constraintTop_toBottomOf="@+id/uvi_tv" />
 
@@ -98,7 +113,9 @@
         android:id="@+id/pop_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Unkown - 10%"
+        android:text="..."
+        android:textSize="22sp"
+        android:textColor="@color/light_blue"
         app:layout_constraintStart_toStartOf="@+id/ci_val"
         app:layout_constraintTop_toBottomOf="@+id/uvi"
         android:layout_marginTop="8dp"/>

@@ -1,0 +1,8 @@
+000,error
+001,rain_icon
+010,cloudy
+011,rain_icon
+100,sunny_icon
+101,sun_rain
+110,sun_with_cloud
+111,sun_cloud_rain

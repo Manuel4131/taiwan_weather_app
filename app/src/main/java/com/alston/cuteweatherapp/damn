@@ -1,0 +1,64 @@
+diff --git a/app/src/main/java/com/test/weatherapp/data/CreateWeatherDataMap.java b/app/src/main/java/com/test/weatherapp/data/CreateWeatherDataMap.java
+index 8c56f32..4fd83c5 100644
+--- a/app/src/main/java/com/test/weatherapp/data/CreateWeatherDataMap.java
++++ b/app/src/main/java/com/test/weatherapp/data/CreateWeatherDataMap.java
+@@ -1,5 +1,7 @@
+ package com.alston.cuteweatherapp.data;
+ 
++import android.content.Context;
++import android.graphics.drawable.Drawable;
+ import android.util.Log;
+ 
+ import com.alston.cuteweatherapp.ForecastData;
+@@ -8,6 +10,7 @@ import com.alston.cuteweatherapp.data.sevenDaysPrediction.weatherData.*;
+ import com.alston.cuteweatherapp.data.sevenDaysPrediction.weatherData.predictWeatherData;
+ import com.alston.cuteweatherapp.data.sevenDaysPrediction.weatherData.Location;
+ import com.alston.cuteweatherapp.data.sevenDaysPrediction.weatherData.WeatherElement;
++import com.alston.cuteweatherapp.utils.ParseWxStatus;
+ 
+ import java.util.ArrayList;
+ import java.util.HashMap;
+@@ -23,6 +26,7 @@ public class CreateWeatherDataMap {
+             "T","RH","MinCI","Wx","MinT","UVI", "WeatherDescription","MaxT"};
+     private static Map<String, Object> sevenDaysPredict = new HashMap<>();
+     private static ArrayList<String> sevenDaysAttr = new ArrayList<String>();
++    private static ArrayList<Integer> weatheIconsId = new ArrayList<>();
+ 
+     static {
+         sevenDaysAttr.add("Wx");
+@@ -50,17 +54,30 @@ public class CreateWeatherDataMap {
+         List<WeatherElement> wlist = wStatus.getRecords().
+                 getLocations().get(0).
+                 getLocation().get(0).getWeatherElement();
+-        for(WeatherElement wl: wlist ){
++
++        ArrayList<Drawable> wxDrawablesList = new ArrayList<>();
++        String elementName;
++        String value="";
++        ArrayList<String> values = new ArrayList<>();
++
++        for(WeatherElement wl: wlist ){//wlist is the major elements: wX, Pop, minT...
+             // extract wx, minT, maxT wether element
+-            if(sevenDaysAttr.contains(wl.getElementName())){
++            elementName = wl.getElementName();
++            if(sevenDaysAttr.contains(elementName)){
+                 // check startTime day is the same as the endTime day
+-                ArrayList<String> values = new ArrayList<>();
+-                for (Time t:wl.getTime()){
++                for (Time t:wl.getTime()){  // t object contains the starttime and endtime and the value
+                     if(t.getStartTime().split(" ")[0].equals(t.getEndTime().split(" ")[0])
+                         ){
+-                        values.add(t.getElementValue().get(0).getValue());
++                        value = t.getElementValue().get(0).getValue();
++                        values.add(value);
+                     }
+                 }
++                // Create corresponding drawables id by Wx string
++                // I don't extract to another method since I don't want to iterate it again.
++                if (elementName.equals("Wx")){
++                    weatheIconsId = ParseWxStatus.parse(values);
++                }
++
+                 SevenDaysWeatherData.constructData(values);
+             }
+ 

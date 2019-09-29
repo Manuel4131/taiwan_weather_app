@@ -6,16 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:id="@+id/searchFilter"
-        android:autofillHints="輸入縣市"
-        android:textSize="8sp"/>
+        android:layout_height="60dp"
+        android:id="@+id/search_location"
+        android:textSize="20sp"/>
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/searchFilter"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_location"
         android:id="@+id/locations_lv"/>
 </RelativeLayout>
