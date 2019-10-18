@@ -5,9 +5,10 @@ import timber.log.Timber;
 public class CuteWeatherDebugTree extends Timber.DebugTree {
     @Override
     protected String createStackElementTag(StackTraceElement element) {
-        return String.format("[L:%s] [M:%s] [C:%s]",
-                element.getLineNumber(),
+        return String.format("[C:%s] [M:%s]  [L:%s] ",
+                super.createStackElementTag(element),
                 element.getMethodName(),
-                super.createStackElementTag(element));
+                element.getLineNumber()
+                );
     }
 }
