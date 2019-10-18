@@ -35,7 +35,7 @@
                     layout="@layout/temperature_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="250dp" />
+                    android:layout_marginTop="200dp" />
 
                 <include layout="@layout/week_forecasting_title" />
 
@@ -44,7 +44,6 @@
                 layout="@layout/recycler_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-
                 <include layout="@layout/weather_detail" />
 
                 <include layout="@layout/wind_speed" />
