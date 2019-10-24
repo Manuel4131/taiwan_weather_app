@@ -1,13 +1,13 @@
 package com.alston.cuteweatherapp;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alston.cuteweatherapp.R;
 
@@ -15,10 +15,12 @@ import com.alston.cuteweatherapp.R;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private ArrayList<ForecastData> weatherPredicts = new ArrayList<ForecastData>();
 
-
+    @Inject
     public RecyclerViewAdapter(){
 
     }
@@ -48,7 +50,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
      */
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder viewHolder, int pos) {
-        Log.d("onBindViewHolder", "BVH called");
+//        Log.d("onBindViewHolder", "BVH called");
         ForecastData predict = weatherPredicts.get(pos);
         viewHolder.predict_day.setText(predict.mWeekDay);
         viewHolder.predict_day_ws.setImageResource(predict.mWeatherStatus);

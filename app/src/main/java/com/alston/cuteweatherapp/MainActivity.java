@@ -1,20 +1,21 @@
 package com.alston.cuteweatherapp;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 /*
  * For horizontal paging.
  * */
-import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,12 +25,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alston.cuteweatherapp.R;
 import com.alston.cuteweatherapp.utils.BuildDataMap;
 import com.alston.cuteweatherapp.utils.MapData;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import timber.log.Timber;
+
+import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
      * horizontally to access previous and next.
      */
     ViewPager mPager;
+    private static int test =0;
     /**
      * The pager adapter, which provides the pages to the view pager widget
      */
@@ -65,16 +74,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+        Log.d(TAG, "activity onCreate");
         mCtx = getBaseContext();
         super.onCreate(savedInstanceState);
+//        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main2);
-        // init ResourceOptimizer for later use in fragments
+        exp();
 
         // create maps
         CreateLocationCountyMap();
 
-        ListView locations_lv = findViewById(R.id.locations_lv);
+        final ListView locations_lv = findViewById(R.id.locations_lv);
         EditText searchLocation = findViewById(R.id.search_location);
         Drawable editTextCancel = ContextCompat.getDrawable(this,R.drawable.cancel);
         editTextCancel.setBounds(0,0,
@@ -99,16 +109,73 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        bindSearchBarEvent(searchLocation,locations_lv);
+//        bindSearchBarEvent(searchLocation,locations_lv);
+
+
+        searchLocation.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                adapter.getFilter().filter(charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        searchLocation.setOnTouchListener(new View.OnTouchListener(){
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                v.performClick();
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    if(event.getRawX()>=(searchLocation.getWidth()-
+                            searchLocation.getCompoundPaddingRight())){
+                        searchLocation.setText("");
+                        findViewById(R.id.viewpager).setVisibility(View.VISIBLE);
+                        findViewById(R.id.search_view_layout).setVisibility(View.GONE);
+                        findViewById(R.id.action_bar).setVisibility(View.VISIBLE);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
+
+        locations_lv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("onItemClick", "onItemClick");
+                String selectedLoc = parent.getItemAtPosition(position).toString();
+                createNewFrag(selectedLoc);
+                duplicatedMethod();
+                findViewById(R.id.viewpager).setVisibility(View.VISIBLE);
+                findViewById(R.id.search_view_layout).setVisibility(View.GONE);
+                findViewById(R.id.action_bar).setVisibility(View.VISIBLE);
+            }
+        });
+
+
+
 //        duplicatedPos = -1; //initial state: no duplicated county.
 
         mPager = findViewById(R.id.viewpager);
         locationTitle = findViewById(R.id.location_title);
-        pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(),getBaseContext());
+
+
+        getFragmentManager().beginTransaction().replace(R.id.viewpager,new android.app.Fragment()).commit();
+        pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(),BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,getBaseContext());
         mPager.setAdapter(pagerAdapter);
         mPager.setOffscreenPageLimit(1);
         newLocation ="宜蘭縣";
-        creatNewFrag(newLocation);
+
+        createNewFrag(newLocation);
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             public void onPageScrollStateChanged(int state) {}
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
@@ -146,18 +213,25 @@ public class MainActivity extends AppCompatActivity {
         );
     }//onCreate
 
-    private void creatNewFrag(String newLocation){
-
+    private void createNewFrag(String newLocation){
+        Timber.d("createNewFrag %s", newLocation);
+        Timber.d("test value is %d ", test);
+        test++;
         if (newLocation==null ) return; //The user didn't select any location.
         Boolean duplicated = pagerAdapter.checkLocAlreadyExist(newLocation);
+
         if (!duplicated) { // null when user doesn't select any location and just return
-             if(pagerAdapter.getCount()>maxFrag){
+
+            if(pagerAdapter.getCount()>maxFrag){
                  Toast.makeText(getBaseContext(),"區域已經最多了,請移除舊的再新增",Toast.LENGTH_LONG)
                                     .show();
                  return;
              }
+//             FragmentManager fragmentManager = getSupportFragmentManager();
+//             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Fragment frag = new NewLocationFrag();
              ((NewLocationFrag) frag).setmLocTitle(locationTitle);
+
             Bundle fragBundle = new Bundle();
 //        fragBundle.putStringArrayList("locations", locations);
             fragBundle.putString("currentLocation", newLocation);
@@ -182,67 +256,61 @@ public class MainActivity extends AppCompatActivity {
         locationTitle.setText(curLoc);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private void bindSearchBarEvent(final EditText searchLocation, final ListView lv){
-        searchLocation.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                adapter.getFilter().filter(charSequence);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        searchLocation.setOnTouchListener(new View.OnTouchListener(){
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                v.performClick();
-                if(event.getAction() == MotionEvent.ACTION_UP){
-                    if(event.getRawX()>=(searchLocation.getWidth()-
-                        searchLocation.getCompoundPaddingRight())){
-                        searchLocation.setText("");
-                        findViewById(R.id.viewpager).setVisibility(View.VISIBLE);
-                        findViewById(R.id.search_view_layout).setVisibility(View.GONE);
-                        findViewById(R.id.action_bar).setVisibility(View.VISIBLE);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("onItemClick", "onItemClick");
-                String selectedLoc = parent.getItemAtPosition(position).toString();
-                creatNewFrag(selectedLoc);
-                findViewById(R.id.viewpager).setVisibility(View.VISIBLE);
-                findViewById(R.id.search_view_layout).setVisibility(View.GONE);
-                findViewById(R.id.action_bar).setVisibility(View.VISIBLE);
-            }
-        });
+//        searchLocation.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+//                adapter.getFilter().filter(charSequence);
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//
+//            }
+//        });
+//
+//        searchLocation.setOnTouchListener(new View.OnTouchListener(){
+//
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                v.performClick();
+//                if(event.getAction() == MotionEvent.ACTION_UP){
+//                    if(event.getRawX()>=(searchLocation.getWidth()-
+//                        searchLocation.getCompoundPaddingRight())){
+//                        searchLocation.setText("");
+//                        findViewById(R.id.viewpager).setVisibility(View.VISIBLE);
+//                        findViewById(R.id.search_view_layout).setVisibility(View.GONE);
+//                        findViewById(R.id.action_bar).setVisibility(View.VISIBLE);
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
+//
+//
+//        lv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Log.d("onItemClick", "onItemClick");
+//                String selectedLoc = parent.getItemAtPosition(position).toString();
+//                createNewFrag(selectedLoc);
+//                duplicatedMethod();
+//                findViewById(R.id.viewpager).setVisibility(View.VISIBLE);
+//                findViewById(R.id.search_view_layout).setVisibility(View.GONE);
+//                findViewById(R.id.action_bar).setVisibility(View.VISIBLE);
+//            }
+//        });
     }
 
-//    private void createMaps(){
-//        BuildDataMap buildDataMap = new BuildDataMap(mCtx);
-//        buildDataMap.buildMapFromAssets(weatherIconMap,"iconMap");
-//        if (weatherIconMap!=null) {
-//            WeatherIconMap wMap = new WeatherIconMap(weatherIconMap);
-//        }
-//        else{
-//            Log.e(TAG, "weatherIconMap is null");
-//        }
-//    }
+    private void duplicatedMethod(){
+        Timber.d("Caller: lv.setOnItemClickListener +");
+    }
+
 
     private void CreateLocationCountyMap(){
         BuildDataMap buildDataMap = new BuildDataMap(mCtx);
@@ -256,5 +324,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "activity destoryed");
     }
     // Called before onStop()
+    private void exp(){
+        String test = "Test A. Test B. Test C.";
+        String [] rest = test.split(" ");
+        Log.d("main", "LookAtMe");
+        for(String s: rest){
 
+            Log.d("main", s);
+        }
+    }
 }

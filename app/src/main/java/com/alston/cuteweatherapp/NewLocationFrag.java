@@ -4,12 +4,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+//import androidx.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,8 @@ import android.widget.Toast;
 
 import com.alston.cuteweatherapp.data.CreateWeatherDataMap;
 import com.alston.cuteweatherapp.data.sevenDaysPrediction.weatherData.predictWeatherData;
+import com.alston.cuteweatherapp.di.DaggerRecyclerViewAdapterComponent;
+import com.alston.cuteweatherapp.di.RecyclerViewAdapterComponent;
 import com.alston.cuteweatherapp.network.RetrofitQuery;
 import com.alston.cuteweatherapp.utils.CheckWeatherStatus;
 import com.alston.cuteweatherapp.utils.CuteWeatherDebugTree;
@@ -29,12 +33,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.alston.cuteweatherapp.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 // import from internal app
 import com.alston.cuteweatherapp.utils.BuildDataMap;
@@ -59,7 +63,7 @@ public class NewLocationFrag extends Fragment {
 
     private RecyclerViewAdapter recyclerViewAdapter;
     private ScrollView scrollView;
-    private  ViewGroup rootView=null;
+    private ViewGroup rootView=null;
 
     public void setmLocTitle(TextView mLocTitle) {
         this.mLocTitle = mLocTitle;
@@ -86,21 +90,17 @@ public class NewLocationFrag extends Fragment {
     @BindView(R.id.default_loc) TextView defaultLoc;
     @BindView(R.id.wind_turbine) ImageView gifWindTurbine;
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create timber tree
-//        if (BuildConfig.DEBUG) {
-////            Timber.plant(new Timber.DebugTree());
-////        }
+
         if (BuildConfig.DEBUG) {
             Timber.plant(new CuteWeatherDebugTree());
         } else {
-            //TODO plant the Production Tree
+            // Todo
         }
         // first to create due to multiple use are required later.
-        mCtx = getActivity();
+        mCtx = Objects.requireNonNull(getActivity());
 
         // generate Chinese to English county map which is required for resource
         //        identity
@@ -113,18 +113,17 @@ public class NewLocationFrag extends Fragment {
         if(bundle!=null){
 //            locationArray = bundle.getStringArrayList("locations");
             mLoc = bundle.getString("currentLocation");
-            Timber.d("%s: onCreate %s", TAG, mLoc);
+            Timber.d(" [2]NewLocation onCreate %s", mLoc);
         }
         else {
             locationArray= null;
         }
         // default location
         if(mLoc ==null) mLoc ="宜蘭縣";
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = (ViewGroup) inflater.inflate(
                 R.layout.scroll_view_base, container, false);
@@ -134,6 +133,9 @@ public class NewLocationFrag extends Fragment {
 //        SevenDaysPredictRecyclerView = rootView.findViewById(R.id.recyclerview);
         SevenDaysPredictRecyclerView.setLayoutManager(new LinearLayoutManager(mCtx));
         recyclerViewAdapter = new RecyclerViewAdapter();
+        // Start to use dagger2: constructor inject
+        RecyclerViewAdapterComponent recyclerViewAdapterComponent = DaggerRecyclerViewAdapterComponent.create();
+        recyclerViewAdapter = recyclerViewAdapterComponent.getRecyclerViewAdapter();
         SevenDaysPredictRecyclerView.setAdapter(recyclerViewAdapter);
         // scrollview
         scrollView = rootView.findViewById(R.id.scrollview);
@@ -144,6 +146,7 @@ public class NewLocationFrag extends Fragment {
             @Override
             public void onResponse(@NonNull Call<predictWeatherData> call,@NonNull Response<predictWeatherData> response) {
                 if(response.isSuccessful()){
+                    Timber.d("+");
                     predictWeatherData weatherStatus = response.body();
                     Map <String,String> weatherDataMap = CreateWeatherDataMap
                             .createWeatherData(weatherStatus);
@@ -158,26 +161,34 @@ public class NewLocationFrag extends Fragment {
                     String RH = weatherDataMap.get("RH");
                     String weatherDescription = weatherDataMap.get("WeatherDescription");
                     // the response doesn't contain UVI index and wind info
-                    String[] parts = weatherDescription.split("。");
+                    String[] parts = Objects.requireNonNull(weatherDescription.split("。"));
                     // workaround, since the response has no wind info.
                     String windData="";
-                    if(parts!=null &&parts.length>=4){
+                    if(parts.length>=4){
                         windData= parts[4];
                     }
 
                     lowest_tmp_tv.setText(minT);
                     highest_tmp_tv.setText(maxT);
                     ci.setText(minCI);
-                    humidity.setText(RH + R.string.percent);
+                    String humidityValue;
+                    if(getActivity()!=null && isAdded()) {
+                        humidityValue = RH + getString(R.string.percent);
+                    }
+                    else{
+                        humidityValue = RH + "%";
+                    }
+                    humidity.setText(humidityValue);
                     currentTmp.setText(temperature);
                     wx.setText(weatherDataMap.get("Wx"));
-                    popVal.setText(weatherDataMap.get("PoP12h")+ R.string.percent);
+                    // refactor
+                    popVal.setText(weatherDataMap.get("PoP12h")+ "%");
                     uviTv.setText(weatherDataMap.get("UVI"));
                     windInfo.setText(windData);
                     Timber.d("retrofit query sucessess");
 
                     // access default location, it requires to be changed in following editions
-                    String dLoc = (String) MapData.getMap("defaultLocMap").get(mLoc);
+                    String dLoc = Objects.requireNonNull((String) MapData.getMap("defaultLocMap").get(mLoc));
                     defaultLoc.setText(dLoc);
                     // one week predict data
                     recyclerViewAdapter = new RecyclerViewAdapter(oneWeekForecast);
@@ -226,7 +237,6 @@ public class NewLocationFrag extends Fragment {
                     Toast.makeText(mCtx, "Network unavailable", Toast.LENGTH_SHORT)
                             .show();
                 }
-                Log.d("main", "query error, start debugging");
                 Timber.d("%s Retrofit: query failed: parsing error", TAG);
 
                 rootView.findViewById(R.id.weather_layout).setVisibility(View.GONE);
@@ -238,11 +248,11 @@ public class NewLocationFrag extends Fragment {
         DrawableImageViewTarget imageViewTarget =
                 new DrawableImageViewTarget(gifWindTurbine);
 
-        Glide
-        .with(this) // replace with 'this' if it's in activity
-        .load(R.drawable.wind_turbine)  // load the gif file
-//        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
-        .into(imageViewTarget);
+//        Glide
+//        .with(this) // replace with 'this' if it's in activity
+//        .load(R.drawable.wind_turbine)  // load the gif file
+////        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
+//        .into(imageViewTarget);
 
         return rootView;
     }

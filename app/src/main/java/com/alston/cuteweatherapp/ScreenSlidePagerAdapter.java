@@ -2,22 +2,20 @@ package com.alston.cuteweatherapp;
 
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter{
+import timber.log.Timber;
+
+public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
 
     private ArrayList<Fragment> locationFrag =new ArrayList<>();
@@ -26,8 +24,9 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter{
     private final String TAG ="ScreenSlidePagerAdapter";
     private Context mCtx;
     private FragmentManager fragmentManager;
-    public ScreenSlidePagerAdapter(FragmentManager fm, Context ctx) {
-        super(fm);
+
+    public ScreenSlidePagerAdapter(FragmentManager fm,int behavior, Context ctx) {
+        super(fm,behavior);
         mCtx = ctx;
     }
 
@@ -43,16 +42,19 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter{
     public ArrayList<Fragment> getLocationFrag() {
         return locationFrag;
     }
+
+
     /**
      * Actually it created new fragment rather than just get an itme.
      */
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         Log.d(TAG, "Pos" + String.valueOf(position));
         if (position >= 0 && position < locationFrag.size()) {
             return locationFrag.get(position);
         } else {
-            Log.e(TAG, "item not exist");
+            Timber.d("%d item not exist", position);
             return null;
         }
     }
@@ -76,6 +78,7 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter{
             return -1;
 
         locationFrag.add(frag);
+        Timber.d("fragment size %d", locationFrag.size());
         mLocations.add(newLocation);
         notifyDataSetChanged();
         Log.d(TAG, "A new fragment is created");
@@ -105,9 +108,12 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter{
     @Override public int getItemPosition (Object object) {
 //        int index = locationFrag.indexOf (object);
 //        if (index == -1)
+
+
             return POSITION_NONE;
 //        else return index;
     }
+
 //    @Override
 //    public void destroyItem(ViewGroup container, int position, Object object) {
 //        fragmentManager.beginTransaction().remove((Fragment) object).commitNowAllowingStateLoss();

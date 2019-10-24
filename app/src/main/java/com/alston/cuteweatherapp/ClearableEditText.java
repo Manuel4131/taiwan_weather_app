@@ -5,7 +5,8 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.support.v7.widget.AppCompatEditText;
+
+import androidx.appcompat.widget.AppCompatEditText;
 
 public class ClearableEditText extends AppCompatEditText {
     private EditText mView;

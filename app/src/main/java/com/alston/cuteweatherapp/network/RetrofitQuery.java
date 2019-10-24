@@ -1,8 +1,9 @@
 package com.alston.cuteweatherapp.network;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.alston.cuteweatherapp.config.Constant;
 import com.alston.cuteweatherapp.data.sevenDaysPrediction.weatherData.predictWeatherData;
@@ -48,6 +49,7 @@ public class RetrofitQuery {
         String endTime = dayStr + "T"+endOfTime;
         Log.d("startTime", startTime);
         Log.d("endTime", endTime);
+
 //        String api_key = accessProperty.get(ctx,"CWB_API_TOKEN");
         String api_key = Constant.cwbOpenApiToken;
         Map<String, String> locationIdMap = new HashMap<String, String>();

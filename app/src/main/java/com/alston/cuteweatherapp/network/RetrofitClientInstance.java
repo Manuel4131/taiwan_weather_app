@@ -1,13 +1,11 @@
 package com.alston.cuteweatherapp.network;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.alston.cuteweatherapp.config.Constant;
-import com.alston.cuteweatherapp.utils.App;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +41,7 @@ public class RetrofitClientInstance {
         okHttpClientBuilder.addInterceptor(loggingInterceptor);
         okHttpClientBuilder.interceptors().add(new Interceptor() {
             @Override
-            public Response intercept(@NonNull  Chain chain) throws IOException {
+            public Response intercept(@NonNull Chain chain) throws IOException {
                 Request request = chain.request();
 
                 // try the request
