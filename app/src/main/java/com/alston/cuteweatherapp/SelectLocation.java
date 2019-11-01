@@ -2,7 +2,7 @@ package com.alston.cuteweatherapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 public class SelectLocation extends AppCompatActivity {
     private ArrayAdapter adapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +68,5 @@ public class SelectLocation extends AppCompatActivity {
             }
         });
     }
-
 }
 

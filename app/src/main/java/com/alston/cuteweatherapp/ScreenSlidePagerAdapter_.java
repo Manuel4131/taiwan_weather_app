@@ -2,20 +2,19 @@ package com.alston.cuteweatherapp;
 
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import android.util.Log;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 
 import timber.log.Timber;
 
-public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+public class ScreenSlidePagerAdapter_ extends FragmentStatePagerAdapter {
 
 
     private ArrayList<Fragment> locationFrag =new ArrayList<>();
@@ -25,7 +24,7 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
     private Context mCtx;
     private FragmentManager fragmentManager;
 
-    public ScreenSlidePagerAdapter(FragmentManager fm,int behavior, Context ctx) {
+    public ScreenSlidePagerAdapter_(FragmentManager fm, int behavior, Context ctx) {
         super(fm,behavior);
         mCtx = ctx;
     }
@@ -33,11 +32,13 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
     protected Boolean checkLocAlreadyExist(String newLocation){
         // remember to store another ArryaList recording the location name
         //only for easier comparison
-        if (mLocations.contains(newLocation)) {
-            Log.d(TAG, "location already exsist");
-            return true;
-        }
-        return false;
+        // 
+//        if (mLocations.contains(newLocation)) {
+//            Log.d(TAG, "location already exsist");
+//            return true;
+//        }
+//        return false;
+        return mLocations.contains(newLocation);
     }
     public ArrayList<Fragment> getLocationFrag() {
         return locationFrag;
@@ -106,24 +107,13 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override public int getItemPosition (Object object) {
-//        int index = locationFrag.indexOf (object);
 //        if (index == -1)
-
-
             return POSITION_NONE;
-//        else return index;
     }
-
-//    @Override
-//    public void destroyItem(ViewGroup container, int position, Object object) {
-//        fragmentManager.beginTransaction().remove((Fragment) object).commitNowAllowingStateLoss();
-//    }
-
 
     @Override
     public int getCount(){
         return locationFrag.size();
     }
-
 
 }//class
