@@ -248,11 +248,11 @@ public class NewLocationFrag extends Fragment {
         DrawableImageViewTarget imageViewTarget =
                 new DrawableImageViewTarget(gifWindTurbine);
 
-//        Glide
-//        .with(this) // replace with 'this' if it's in activity
-//        .load(R.drawable.wind_turbine)  // load the gif file
-////        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
-//        .into(imageViewTarget);
+        Glide
+        .with(this) // replace with 'this' if it's in activity
+        .load(R.drawable.wind_turbine)  // load the gif file
+//        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
+        .into(imageViewTarget);
 
         return rootView;
     }
